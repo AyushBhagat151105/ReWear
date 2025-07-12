@@ -1,17 +1,29 @@
-import { Link } from '@tanstack/react-router'
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { useState } from "react";
+import { motion } from "motion/react";
 
-export default function Header() {
+export default function Navbar() {
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <header className="p-2 flex gap-2 bg-white text-black justify-between">
-      <nav className="flex flex-row">
-        <div className="px-2 font-bold">
-          <Link to="/">Home</Link>
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full border-b shadow-sm bg-white fixed top-0 z-50"
+    >
+      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="text-lg font-bold">ReWear</div>
+        <div className="hidden md:flex gap-4 items-center">
+          <Input placeholder="Search items..." className="w-64" />
+          <Button variant="default">Search</Button>
         </div>
-
-        <div className="px-2 font-bold">
-          <Link to="/demo/tanstack-query">TanStack Query</Link>
-        </div>
-      </nav>
-    </header>
-  )
+        <Button className="md:hidden" size="icon" variant="outline" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+          <Menu />
+        </Button>
+      </div>
+    </motion.header>
+  );
 }
