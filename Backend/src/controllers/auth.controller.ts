@@ -122,6 +122,10 @@ export const getUser = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
+  if (!user) {
+    return res.status(404).json(new ApiResponse(404, "User not found", {}));
+  }
+
   return res.status(200).json(new ApiResponse(200, "User found", user));
 });
 

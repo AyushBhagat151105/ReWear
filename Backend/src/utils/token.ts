@@ -29,7 +29,7 @@ export const generateAccessAndRefreshToken = async (
   const accessToken = generateAccessToken(id, email, role);
   const refreshToken = generateRefreshToken(id, email, role);
 
-  await db.user.upate({
+  await db.user.update({
     where: {
       id,
     },
