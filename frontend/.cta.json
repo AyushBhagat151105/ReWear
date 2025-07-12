@@ -8,6 +8,7 @@
   "version": 1,
   "framework": "react-cra",
   "chosenAddOns": [
+    "eslint",
     "shadcn",
     "tanstack-query"
   ]
