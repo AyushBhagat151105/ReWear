@@ -13,4 +13,4 @@ export const itemStatusEnum = {
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
   PENDING: "PENDING",
-};
+} as const;

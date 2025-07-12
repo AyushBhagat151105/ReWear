@@ -13,6 +13,13 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: z
     .string()
     .min(1, { message: "CLOUDINARY_API_SECRET is required" }),
+  ACCESS_TOKEN_SECRET: z
+    .string()
+    .min(1, { message: "ACCESS_TOKEN_SECRET is required" }),
+  REFRESH_TOKEN_SECRET: z
+    .string()
+    .min(1, { message: "REFRESH_TOKEN_SECRET is required" }),
+  ORIGIN_URL: z.string().min(1, { message: "ORIGIN_URL is required" }),
 });
 function createENV(env: NodeJS.ProcessEnv) {
   const validationResult = envSchema.safeParse(env);

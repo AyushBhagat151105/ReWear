@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { ItemData } from "@/types";
 import { ApiResponse } from "@/utils/apiResponse";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { uploadOnCloudinary } from "@/utils/cloudinary";
@@ -8,7 +9,17 @@ import { itemCreateSchema } from "@/validators/zod";
 import { Request, Response } from "express";
 
 export const createItem = asyncHandler(async (req: Request, res: Response) => {
-  const result = validateSchema(itemCreateSchema, req.body);
+  const data: ItemData = {
+    title: req.body.title,
+    description: req.body.description,
+    category: req.body.category,
+    point: parseInt(req.body.point),
+    size: req.body.size,
+    userid: req.body.userid,
+    condition: req.body.condition,
+  };
+
+  const result = validateSchema(itemCreateSchema, data);
 
   if (!result.success) {
     return res

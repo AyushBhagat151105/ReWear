@@ -1,5 +1,6 @@
 import { ApiError } from "@/utils/apiError";
 import { asyncHandler } from "@/utils/asyncHandler";
+import { env } from "@/validators/env";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -15,7 +16,7 @@ export const isLoggedIn = asyncHandler(
 
     const decoded = jwt.verify(
       accessToken,
-      process.env.ACCESS_TOKEN_SECRET as string
+      env.ACCESS_TOKEN_SECRET as string
     ) as { id: string; email: string; role: string };
 
     if (!decoded) {
