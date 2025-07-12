@@ -6,6 +6,7 @@ import { cookieOptions } from "@/utils/constants";
 import { comparePassword, hashPassword } from "@/utils/hash";
 import { generateAccessAndRefreshToken } from "@/utils/token";
 import { validateSchema } from "@/utils/validateSchema";
+import { env } from "@/validators/env";
 import { loginUserSchema, registerUserSchema } from "@/validators/zod";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -170,7 +171,7 @@ export const refreshAccessToken = asyncHandler(
 
     const decoded = jwt.verify(
       incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET as string
+      env.REFRESH_TOKEN_SECRET as string
     ) as { id: string; email: string; role: string };
 
     if (!decoded) {

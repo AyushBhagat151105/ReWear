@@ -65,6 +65,9 @@ export const getAllItems = asyncHandler(async (req: Request, res: Response) => {
     where: {
       status: itemStatusEnum.PENDING,
     },
+    include: {
+      image: true,
+    },
   });
 
   if (!items || items.length === 0) {
