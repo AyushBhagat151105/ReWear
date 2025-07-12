@@ -1,0 +1,42 @@
+import { db } from "@/db";
+import jwt from "jsonwebtoken";
+
+const generateAccessToken = (id: string, email: string, role: string) => {
+  return jwt.sign(
+    { id, email, role },
+    process.env.ACCESS_TOKEN_SECRET as string,
+    {
+      expiresIn: "1d",
+    }
+  );
+};
+
+const generateRefreshToken = (id: string, email: string, role: string) => {
+  return jwt.sign(
+    { id, email, role },
+    process.env.REFRESH_TOKEN_SECRET as string,
+    {
+      expiresIn: "7d",
+    }
+  );
+};
+
+export const generateAccessAndRefreshToken = async (
+  id: string,
+  email: string,
+  role: string
+) => {
+  const accessToken = generateAccessToken(id, email, role);
+  const refreshToken = generateRefreshToken(id, email, role);
+
+  await db.user.upate({
+    where: {
+      id,
+    },
+    data: {
+      refreshToken,
+    },
+  });
+
+  return { accessToken, refreshToken };
+};
