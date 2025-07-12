@@ -20,5 +20,5 @@ function RouteComponent() {
 
   if (!user) return null
 
-  return <div>Hello "/dashboard/"!</div>
+  return <div>Hello "/dashboard/"! hii</div>
 }
