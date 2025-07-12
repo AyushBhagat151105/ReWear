@@ -1,11 +1,18 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Card, CardContent, CardFooter, CardHeader, CardTitle,
+} from '@/components/ui/card'
+import {
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+} from '@/components/ui/form'
+import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
+import { mockUser, useStore } from '@/store/authStore'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -19,6 +26,10 @@ export const Route = createFileRoute('/(auth)/login')({
 })
 
 function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false)
+  const { setUser } = useStore()
+  const router = useRouter()
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -28,7 +39,15 @@ function LoginPage() {
   })
 
   const onSubmit = (values: LoginFormValues) => {
+    // fake check or backend call
     console.log('Login values:', values)
+    setUser(mockUser)
+    router.navigate({ to: '/dashboard' })
+  }
+
+  const handleFakeLogin = () => {
+    setUser(mockUser)
+    router.navigate({ to: '/dashboard' })
   }
 
   return (
@@ -59,9 +78,24 @@ function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="********" {...field} />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="********"
+                          {...field}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -72,9 +106,16 @@ function LoginPage() {
             </form>
           </Form>
         </CardContent>
-        <CardFooter>
-          <Link to="/register" className='text-sm text-blue-600'>Need an Account</Link>
+
+        <CardFooter className="flex justify-between">
+          <Link to="/register" className="text-sm text-blue-600">
+            Need an Account?
+          </Link>
         </CardFooter>
+
+        <Button className="w-full" onClick={handleFakeLogin}>
+          Fake Login
+        </Button>
       </Card>
     </div>
   )
