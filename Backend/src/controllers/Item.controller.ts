@@ -7,7 +7,6 @@ import { itemCreateSchema } from "@/validators/zod";
 import { Request, Response } from "express";
 
 export const createItem = asyncHandler(async (req: Request, res: Response) => {
-  // ✅ 1. Validate input using your helper
   const result = validateSchema(itemCreateSchema, req.body);
 
   if (!result.success) {
@@ -54,7 +53,14 @@ export const createItem = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getAllItems = asyncHandler(async (req: Request, res: Response) => {
-  const items = await db.item.findMany();
+  const items = await db.item.findMany({
+    where: {
+      status: "APPROVED",
+    },
+    include: {
+      image: true,
+    },
+  });
 
   if (!items)
     return res.status(404).json(new ApiResponse(404, "Items not found", {}));
@@ -113,9 +119,20 @@ export const getItem = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  if (!item) {
+  if (!item || item.status !== "APPROVED") {
     return res.status(404).json(new ApiResponse(404, "Item not found", {}));
   }
 
   return res.status(200).json(new ApiResponse(200, "Item found", item));
 });
+
+export const getUsersItem = asyncHandler(
+  async (req: Request, res: Response) => {
+    const items = await db.item.findMany();
+
+    if (!items)
+      return res.status(404).json(new ApiResponse(404, "Items not found", {}));
+
+    return res.status(200).json(new ApiResponse(200, "Items found", items));
+  }
+);
