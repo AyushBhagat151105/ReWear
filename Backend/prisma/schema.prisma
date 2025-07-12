@@ -88,20 +88,29 @@ model Item {
   user             User               @relation(fields: [userid], references: [id])
   Purchase         Purchase[]
   PointTransaction PointTransaction[]
+  requestedSwaps   Swap[]             @relation("RequestedItem")
+  offeredSwaps     Swap[]             @relation("OfferedItem")
 
   @@index([id, status, title, isAvailable])
 }
 
 model Swap {
-  id          String     @id @default(uuid())
-  item        Item       @relation(fields: [itemId], references: [id])
-  itemId      String
-  requester   User       @relation("RequesterSwaps", fields: [requesterId], references: [id])
-  requesterId String
-  owner       User       @relation("OwnerSwaps", fields: [ownerId], references: [id])
-  ownerId     String
-  status      SwapStatus @default(PENDING)
-  createdAt   DateTime   @default(now())
+  id              String @id @default(uuid())
+  // Item being requested
+  requestedItem   Item   @relation("RequestedItem", fields: [requestedItemId], references: [id])
+  requestedItemId String
+
+  // Item offered by requester
+  offeredItem   Item       @relation("OfferedItem", fields: [offeredItemId], references: [id])
+  offeredItemId String
+  requester     User       @relation("RequesterSwaps", fields: [requesterId], references: [id])
+  requesterId   String
+  owner         User       @relation("OwnerSwaps", fields: [ownerId], references: [id])
+  ownerId       String
+  status        SwapStatus @default(PENDING)
+  createdAt     DateTime   @default(now())
+  Item          Item?      @relation(fields: [itemId], references: [id])
+  itemId        String?
 }
 
 model Image {
