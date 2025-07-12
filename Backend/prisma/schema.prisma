@@ -13,7 +13,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id String @id @default(uuid())
-  name String
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ItemStatus {
+  APPROVED
+  REJECTED
+  PENDING
+}
+
+enum SwapStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ItemCondition {
+  NEW
+  USED
+  GOOD
+  FAIR
+  POOR
+}
+
+enum PurchaseType {
+  SWAP
+  POINT
+}
+
+enum TransactionType {
+  EARN
+  REDEEM
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  username            String    @unique
+  password            String
+  role                UserRole  @default(USER)
+  avatar              String?
+  refreshToken        String?
+  resetPasswordToken  String?
+  resetPasswordExpiry DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  swapRequests     Swap[]             @relation("RequesterSwaps")
+  swapsOwned       Swap[]             @relation("OwnerSwaps")
+  Item             Item[]
+  Purchase         Purchase[]
+  PointTransaction PointTransaction[]
+}
+
+model Item {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  image       Image[]
+  category    String
+  size        String
+  isAvailable Boolean       @default(false)
+  status      ItemStatus    @default(PENDING)
+  point       Int
+  userid      String
+  condition   ItemCondition @default(NEW)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  Swap Swap[]
+
+  user             User               @relation(fields: [userid], references: [id])
+  Purchase         Purchase[]
+  PointTransaction PointTransaction[]
+
+  @@index([id, status, title, isAvailable])
+}
+
+model Swap {
+  id          String     @id @default(uuid())
+  item        Item       @relation(fields: [itemId], references: [id])
+  itemId      String
+  requester   User       @relation("RequesterSwaps", fields: [requesterId], references: [id])
+  requesterId String
+  owner       User       @relation("OwnerSwaps", fields: [ownerId], references: [id])
+  ownerId     String
+  status      SwapStatus @default(PENDING)
+  createdAt   DateTime   @default(now())
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  url       String
+  urlId     String
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Purchase {
+  id        String       @id @default(uuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  itemId    String
+  item      Item         @relation(fields: [itemId], references: [id])
+  type      PurchaseType @default(POINT)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model PointTransaction {
+  id        String          @id @default(uuid())
+  user      User            @relation(fields: [userId], references: [id])
+  userId    String
+  item      Item?           @relation(fields: [itemId], references: [id])
+  itemId    String?
+  type      TransactionType
+  points    Int
+  createdAt DateTime        @default(now())
 }
