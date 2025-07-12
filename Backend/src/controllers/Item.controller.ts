@@ -1,13 +1,25 @@
 import { db } from "@/db";
+import { ItemData } from "@/types";
 import { ApiResponse } from "@/utils/apiResponse";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { uploadOnCloudinary } from "@/utils/cloudinary";
+import { itemStatusEnum } from "@/utils/constants";
 import { validateSchema } from "@/utils/validateSchema";
 import { itemCreateSchema } from "@/validators/zod";
 import { Request, Response } from "express";
 
 export const createItem = asyncHandler(async (req: Request, res: Response) => {
-  const result = validateSchema(itemCreateSchema, req.body);
+  const data: ItemData = {
+    title: req.body.title,
+    description: req.body.description,
+    category: req.body.category,
+    point: parseInt(req.body.point),
+    size: req.body.size,
+    userid: req.body.userid,
+    condition: req.body.condition,
+  };
+
+  const result = validateSchema(itemCreateSchema, data);
 
   if (!result.success) {
     return res
@@ -55,7 +67,7 @@ export const createItem = asyncHandler(async (req: Request, res: Response) => {
 export const getAllItems = asyncHandler(async (req: Request, res: Response) => {
   const items = await db.item.findMany({
     where: {
-      status: "APPROVED",
+      status: itemStatusEnum.APPROVED,
     },
     include: {
       image: true,
@@ -119,7 +131,7 @@ export const getItem = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  if (!item || item.status !== "APPROVED") {
+  if (!item || item.status !== itemStatusEnum.APPROVED) {
     return res.status(404).json(new ApiResponse(404, "Item not found", {}));
   }
 
