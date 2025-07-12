@@ -1,11 +1,12 @@
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
+import { useRouter } from "@tanstack/react-router";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter()
 
   return (
     <motion.header
@@ -17,8 +18,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <div className="text-lg font-bold">ReWear</div>
         <div className="hidden md:flex gap-4 items-center">
-          <Input placeholder="Search items..." className="w-64" />
-          <Button variant="default">Search</Button>
+
+          <Button variant="outline" onClick={() => router.navigate({ to: "/register" })}>Register</Button>
+          <Button variant="default" onClick={() => router.navigate({ to: "/login" })}>Login</Button>
         </div>
         <Button className="md:hidden" size="icon" variant="outline" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
           <Menu />
